@@ -1,37 +1,44 @@
-version: '3.9'
+version: "3.9"
 
 services:
 
-  postgres:
-    image: postgres:15
-    container_name: risk_postgres
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: riskdb
+  frontend:
+    build:
+      context: ./frontend
     ports:
-      - "5432:5432"
-
-  redis:
-    image: redis:latest
-    container_name: risk_redis
-    ports:
-      - "6379:6379"
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-
-  kafka:
-    image: confluentinc/cp-kafka:7.4.0
-    container_name: kafka
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
-      - zookeeper
+      - backend
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     ports:
-      - "9092:9092"
+      - "8000:8000"
+    volumes:
+      - .:/app
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      - OLLAMA_HOST=http://ollama:11434
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+volumes:
+  ollama_data:

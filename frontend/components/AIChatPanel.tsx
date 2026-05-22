@@ -53,7 +53,7 @@ export default function AIChatPanel() {
 
       const response = await fetch(
 
-        `http://127.0.0.1:8000/rag?question=${encodeURIComponent(userQuestion)}`
+        `http://localhost:8000/rag?question=${encodeURIComponent(userQuestion)}`
       )
 
 

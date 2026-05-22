@@ -3,11 +3,8 @@
 import { useState } from "react"
 
 import Navbar from "../components/Navbar"
-
 import Sidebar from "../components/Sidebar"
-
 import DashboardContent from "../components/DashboardContent"
-
 import PDFUpload from "@/components/PDFUpload"
 
 
@@ -25,11 +22,13 @@ export default function Home() {
 
     <main className="bg-[#050816] min-h-screen text-white">
 
-      {/* TOP NAVBAR */}
+      {/* NAVBAR */}
 
       <Navbar />
 
 
+
+      {/* MAIN LAYOUT */}
 
       <div className="flex flex-col lg:flex-row">
 
@@ -45,11 +44,11 @@ export default function Home() {
 
 
 
-        {/* MAIN CONTENT */}
+        {/* CONTENT */}
 
         <div className="flex-1 p-4 lg:p-6 overflow-y-auto space-y-6">
 
-          {/* DASHBOARD CONTENT */}
+          {/* DASHBOARD */}
 
           <DashboardContent
 
@@ -59,7 +58,7 @@ export default function Home() {
 
 
 
-          {/* PDF UPLOAD PANEL */}
+          {/* PDF PANEL */}
 
           <PDFUpload />
 
