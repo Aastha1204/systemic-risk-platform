@@ -31,3 +31,9 @@ requests
 mlflow
 
 prometheus-client
+fastapi
+uvicorn
+python-multipart
+langchain-community
+pypdf
+ollama

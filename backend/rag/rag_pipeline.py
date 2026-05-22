@@ -2,8 +2,13 @@ from langchain_community.vectorstores import Chroma
 
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
+import ollama
 
-# MARKET DATA
+
+
+# =========================
+# LIVE MARKET DATA
+# =========================
 
 inflation = 6.1
 
@@ -12,7 +17,10 @@ volatility = "HIGH"
 risk_score = 0.83
 
 
-# EMBEDDINGS
+
+# =========================
+# LOAD EMBEDDINGS
+# =========================
 
 embedding = HuggingFaceEmbeddings(
 
@@ -20,7 +28,10 @@ embedding = HuggingFaceEmbeddings(
 )
 
 
-# VECTOR DATABASE
+
+# =========================
+# LOAD VECTOR DATABASE
+# =========================
 
 db = Chroma(
 
@@ -30,40 +41,129 @@ db = Chroma(
 )
 
 
-# QUERY
 
-query = f"""
+# =========================
+# MAIN RAG FUNCTION
+# =========================
 
-Current inflation is {inflation}
-
-Current market volatility is {volatility}
-
-Risk score is {risk_score}
-
-Compare this situation
-to historical financial crises.
-"""
+def ask_rag(question: str):
 
 
-# SEARCH
 
-results = db.similarity_search(
+    # DYNAMIC QUERY
 
-    query,
+    query = f"""
 
-    k=3
-)
+    Current inflation is {inflation}
 
+    Current market volatility is {volatility}
 
-# OUTPUT
-
-print("\n===== AI RISK ANALYST =====\n")
+    Current systemic risk score is {risk_score}
 
 
-for i, result in enumerate(results, 1):
 
-    print(f"\n🔹 RESULT {i}\n")
+    User Question:
 
-    print(result.page_content)
+    {question}
 
-    print("\n-------------------------\n")
+
+
+    Compare this situation
+
+    to historical financial crises.
+
+    """
+
+
+
+    # VECTOR SEARCH
+
+    results = db.similarity_search(
+
+        query,
+
+        k=3
+    )
+
+
+
+    # BUILD CONTEXT
+
+    context = "\n".join(
+
+        [result.page_content for result in results]
+    )
+
+
+
+    # FINAL AI PROMPT
+
+    prompt = f"""
+
+    You are an enterprise AI financial analyst.
+
+
+
+    Analyze systemic risk,
+
+    banking instability,
+
+    contagion spread,
+
+    and financial crises.
+
+
+
+    Use BOTH:
+
+    1. Historical financial documents
+
+    2. Current market conditions
+
+
+
+    CURRENT MARKET CONDITIONS:
+
+    Inflation: {inflation}
+
+    Volatility: {volatility}
+
+    Risk Score: {risk_score}
+
+
+
+    HISTORICAL DOCUMENT CONTEXT:
+
+    {context}
+
+
+
+    USER QUESTION:
+
+    {question}
+
+    """
+
+
+
+    # OLLAMA AI RESPONSE
+
+    response = ollama.chat(
+
+        model="llama3",
+
+        messages=[
+
+            {
+
+                "role": "user",
+
+                "content": prompt
+            }
+
+        ]
+    )
+
+
+
+    return response["message"]["content"]
