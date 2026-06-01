@@ -5,3 +5,6 @@ node_modules/
 .next/
 vector_db/
 venv/
+backend/rag/vector_db/
+backend/rag/docs/
+
